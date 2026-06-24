@@ -183,12 +183,12 @@
 
                     <td>
 
-                        {% if usuario.perfil == 'admin' %}
+                        {% if usuario.perfil == 'master' %}
+                            <span class="badge badge-admin">Master</span>
+                        {% elif usuario.perfil == 'admin' %}
                             <span class="badge badge-admin">Admin</span>
-
                         {% elif usuario.perfil == 'operador' %}
                             <span class="badge badge-operador">Operador</span>
-
                         {% else %}
                             <span class="badge badge-consulta">Consulta</span>
                         {% endif %}

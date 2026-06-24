@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.master-hero{
+    background:linear-gradient(135deg,#020617,#1e293b,#14532d);
+    color:#fff;
+    border-radius:30px;
+    padding:30px;
+    margin-bottom:24px;
+    box-shadow:0 22px 55px rgba(15,23,42,.22);
+}
+
+.master-hero h1{
+    margin:0;
+    font-size:36px;
+    font-weight:950;
+}
+
+.master-hero p{
+    margin-top:8px;
+    color:#d1fae5;
+    font-weight:700;
+}
+
+.master-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:24px;
+}
+
+.master-card{
+    background:#fff;
+    border-radius:24px;
+    padding:20px;
+    box-shadow:0 12px 32px rgba(15,23,42,.08);
+    border:1px solid #e5e7eb;
+}
+
+.master-card small{
+    color:#64748b;
+    font-weight:900;
+    text-transform:uppercase;
+}
+
+.master-card h2{
+    margin:8px 0 0;
+    font-size:30px;
+    color:#0f172a;
+}
+
+.card-green{border-top:5px solid #22c55e;}
+.card-blue{border-top:5px solid #2563eb;}
+.card-yellow{border-top:5px solid #f59e0b;}
+.card-red{border-top:5px solid #ef4444;}
+
+.table-card{
+    background:#fff;
+    border-radius:28px;
+    padding:22px;
+    box-shadow:0 16px 42px rgba(15,23,42,.08);
+    overflow-x:auto;
+}
+
+.table-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+
+.table-top h2{
+    margin:0;
+    color:#0f172a;
+}
+
+.master-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:980px;
+}
+
+.master-table th{
+    background:#f8fafc;
+    color:#475569;
+    font-size:13px;
+    text-transform:uppercase;
+    padding:14px;
+    text-align:left;
+}
+
+.master-table td{
+    padding:14px;
+    border-top:1px solid #e5e7eb;
+    color:#0f172a;
+    font-weight:700;
+}
+
+.badge{
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:950;
+    display:inline-block;
+}
+
+.badge-ok{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-alerta{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-vencida{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.badge-off{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+@media(max-width:1100px){
+    .master-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:650px){
+    .master-hero{
+        padding:24px;
+        border-radius:24px;
+    }
+
+    .master-hero h1{
+        font-size:28px;
+    }
+
+    .master-grid{
+        grid-template-columns:1fr;
+    }
+
+    .table-card{
+        padding:14px;
+    }
+}
+</style>
+
+<div class="master-hero">
+    <h1>Painel Master</h1>
+    <p>Controle geral das empresas, mensalidades e uso do MauntePix.</p>
+</div>
+
+<div class="master-grid">
+    <div class="master-card card-blue">
+        <small>Empresas cadastradas</small>
+        <h2>{{ total_empresas }}</h2>
+    </div>
+
+    <div class="master-card card-green">
+        <small>Empresas ativas</small>
+        <h2>{{ empresas_ativas }}</h2>
+    </div>
+
+    <div class="master-card card-red">
+        <small>Mensalidades vencidas</small>
+        <h2>{{ vencidas }}</h2>
+    </div>
+
+    <div class="master-card card-yellow">
+        <small>Vencendo em até 5 dias</small>
+        <h2>{{ vencendo }}</h2>
+    </div>
+
+    <div class="master-card card-blue">
+        <small>Usuários</small>
+        <h2>{{ total_usuarios }}</h2>
+    </div>
+
+    <div class="master-card card-green">
+        <small>Clientes devedores</small>
+        <h2>{{ total_clientes_devedores }}</h2>
+    </div>
+
+    <div class="master-card card-yellow">
+        <small>Parcelamentos</small>
+        <h2>{{ total_parcelamentos }}</h2>
+    </div>
+
+    <div class="master-card card-blue">
+        <small>Parcelas geradas</small>
+        <h2>{{ total_parcelas }}</h2>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="table-top">
+        <h2>Empresas / Clientes SaaS</h2>
+    </div>
+
+    <table class="master-table">
+        <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Plano</th>
+                <th>Mensalidade</th>
+                <th>Vencimento</th>
+                <th>Status Pagamento</th>
+                <th>Sistema</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for empresa in empresas %}
+                <tr>
+                    <td>{{ empresa.nome }}</td>
+                    <td>{{ empresa.email or '-' }}</td>
+                    <td>{{ empresa.telefone or '-' }}</td>
+                    <td>{{ empresa.plano or '-' }}</td>
+                    <td>R$ {{ "%.2f"|format(empresa.valor_mensalidade or 0)|replace(".", ",") }}</td>
+                    <td>
+                        {% if empresa.data_vencimento %}
+                            {{ empresa.data_vencimento.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if empresa.data_vencimento and empresa.data_vencimento < hoje %}
+                            <span class="badge badge-vencida">Vencida</span>
+                        {% elif empresa.data_vencimento and empresa.mensalidade_proxima() %}
+                            <span class="badge badge-alerta">Vencendo</span>
+                        {% else %}
+                            <span class="badge badge-ok">Em dia</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if empresa.ativo %}
+                            <span class="badge badge-ok">Ativo</span>
+                        {% else %}
+                            <span class="badge badge-off">Inativo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" style="text-align:center;color:#64748b;padding:26px;">
+                        Nenhuma empresa cadastrada.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

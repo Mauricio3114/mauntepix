@@ -143,6 +143,13 @@
 
                 <select name="perfil">
 
+                    {% if current_user.perfil == "master" %}
+                        <option value="master"
+                        {% if usuario and usuario.perfil == 'master' %}selected{% endif %}>
+                            Master
+                        </option>
+                    {% endif %}
+
                     <option value="admin"
                     {% if usuario and usuario.perfil == 'admin' %}selected{% endif %}>
                         Admin

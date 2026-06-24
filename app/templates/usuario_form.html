@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.form-card{
+    max-width:850px;
+    margin:auto;
+    background:#fff;
+    border-radius:26px;
+    padding:35px;
+    box-shadow:0 15px 40px rgba(15,23,42,.08);
+}
+
+.form-header{
+    margin-bottom:25px;
+}
+
+.form-header h1{
+    margin:0;
+    font-size:32px;
+    color:#0f172a;
+}
+
+.form-header p{
+    color:#64748b;
+    margin-top:5px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+}
+
+.campo-full{
+    grid-column:span 2;
+}
+
+.campo label{
+    margin-bottom:8px;
+    color:#334155;
+    font-weight:700;
+}
+
+.campo input,
+.campo select{
+    border:1px solid #cbd5e1;
+    border-radius:14px;
+    padding:14px;
+    font-size:15px;
+}
+
+.form-actions{
+    margin-top:25px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.btn-salvar{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    border:none;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+}
+
+.btn-voltar{
+    background:#e2e8f0;
+    color:#0f172a;
+    text-decoration:none;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:700;
+}
+
+@media(max-width:768px){
+
+.form-grid{
+    grid-template-columns:1fr;
+}
+
+.campo-full{
+    grid-column:span 1;
+}
+
+.form-card{
+    padding:20px;
+}
+
+}
+
+</style>
+
+<div class="form-card">
+
+    <div class="form-header">
+
+        <h1>
+            {% if usuario %}
+                Editar Usuário
+            {% else %}
+                Novo Usuário
+            {% endif %}
+        </h1>
+
+        <p>Preencha os dados abaixo.</p>
+
+    </div>
+
+    <form method="POST">
+
+        <div class="form-grid">
+
+            <div class="campo campo-full">
+                <label>Nome</label>
+                <input
+                    type="text"
+                    name="nome"
+                    required
+                    value="{{ usuario.nome if usuario else '' }}">
+            </div>
+
+            <div class="campo">
+                <label>E-mail</label>
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    value="{{ usuario.email if usuario else '' }}">
+            </div>
+
+            <div class="campo">
+                <label>Perfil</label>
+
+                <select name="perfil">
+
+                    <option value="admin"
+                    {% if usuario and usuario.perfil == 'admin' %}selected{% endif %}>
+                        Admin
+                    </option>
+
+                    <option value="operador"
+                    {% if usuario and usuario.perfil == 'operador' %}selected{% endif %}>
+                        Operador
+                    </option>
+
+                    <option value="consulta"
+                    {% if usuario and usuario.perfil == 'consulta' %}selected{% endif %}>
+                        Consulta
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="campo campo-full">
+                <label>
+                    Senha
+                    {% if usuario %}
+                        (deixe vazio para manter a atual)
+                    {% endif %}
+                </label>
+
+                <input
+                    type="password"
+                    name="senha"
+                    {% if not usuario %}required{% endif %}>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <button type="submit" class="btn-salvar">
+                Salvar
+            </button>
+
+            <a href="{{ url_for('usuarios.listar_usuarios') }}"
+               class="btn-voltar">
+               Voltar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

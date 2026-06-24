@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.config-page{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+}
+
+.config-hero{
+    background:linear-gradient(135deg,#0f172a,#14532d);
+    color:#fff;
+    border-radius:30px;
+    padding:30px;
+    box-shadow:0 20px 45px rgba(15,23,42,.22);
+}
+
+.config-hero h1{
+    margin:0;
+    font-size:34px;
+    font-weight:900;
+}
+
+.config-hero p{
+    margin-top:8px;
+    color:#dcfce7;
+    font-weight:600;
+}
+
+.config-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:22px;
+}
+
+.config-card{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:26px;
+    padding:24px;
+    box-shadow:0 12px 32px rgba(15,23,42,.07);
+}
+
+.config-card h2{
+    margin:0 0 6px;
+    color:#0f172a;
+    font-size:22px;
+}
+
+.config-card p{
+    margin:0 0 20px;
+    color:#64748b;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.campo-full{
+    grid-column:span 2;
+}
+
+.campo label{
+    color:#334155;
+    font-size:14px;
+    font-weight:900;
+}
+
+.campo input{
+    width:100%;
+    border:1px solid #cbd5e1;
+    border-radius:15px;
+    padding:14px;
+    font-size:15px;
+    outline:none;
+}
+
+.campo input:focus{
+    border-color:#32BC7E;
+    box-shadow:0 0 0 4px rgba(50,188,126,.14);
+}
+
+.pix-status{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:18px;
+    margin-top:16px;
+}
+
+.switch-line{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+}
+
+.switch-line strong{
+    display:block;
+    color:#0f172a;
+}
+
+.switch-line small{
+    color:#64748b;
+}
+
+.switch{
+    position:relative;
+    width:58px;
+    height:32px;
+}
+
+.switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    inset:0;
+    background:#cbd5e1;
+    border-radius:999px;
+    transition:.2s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:24px;
+    height:24px;
+    left:4px;
+    top:4px;
+    background:#fff;
+    border-radius:50%;
+    transition:.2s;
+    box-shadow:0 3px 8px rgba(0,0,0,.2);
+}
+
+.switch input:checked + .slider{
+    background:#32BC7E;
+}
+
+.switch input:checked + .slider:before{
+    transform:translateX(26px);
+}
+
+.actions{
+    margin-top:22px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.btn-save{
+    border:none;
+    background:linear-gradient(135deg,#32BC7E,#16a34a);
+    color:#fff;
+    padding:15px 24px;
+    border-radius:15px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.btn-back{
+    background:#e2e8f0;
+    color:#0f172a;
+    padding:15px 24px;
+    border-radius:15px;
+    font-weight:900;
+    text-decoration:none;
+}
+
+.info-box{
+    background:linear-gradient(135deg,#ecfdf5,#f8fafc);
+    border:1px solid #bbf7d0;
+    border-radius:22px;
+    padding:20px;
+    margin-top:16px;
+}
+
+.info-box strong{
+    color:#14532d;
+    display:block;
+    margin-bottom:6px;
+}
+
+.info-box p{
+    color:#166534;
+    margin:0;
+    font-size:14px;
+}
+
+@media(max-width:950px){
+    .config-grid{
+        grid-template-columns:1fr;
+    }
+
+    .config-hero{
+        padding:24px;
+        border-radius:24px;
+    }
+
+    .config-hero h1{
+        font-size:28px;
+    }
+}
+
+@media(max-width:650px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .campo-full{
+        grid-column:span 1;
+    }
+
+    .config-card{
+        padding:18px;
+        border-radius:22px;
+    }
+
+    .actions a,
+    .actions button{
+        width:100%;
+        text-align:center;
+    }
+}
+</style>
+
+<div class="config-page">
+
+    <div class="config-hero">
+        <h1>Configurações</h1>
+        <p>Gerencie os dados da empresa e as informações de recebimento via PIX.</p>
+    </div>
+
+    <form method="POST">
+
+        <div class="config-grid">
+
+            <div class="config-card">
+                <h2>Dados da Empresa</h2>
+                <p>Essas informações identificam a empresa dentro do MauntePix.</p>
+
+                <div class="form-grid">
+
+                    <div class="campo campo-full">
+                        <label>Nome da empresa</label>
+                        <input type="text" name="nome" required value="{{ empresa.nome or '' }}">
+                    </div>
+
+                    <div class="campo">
+                        <label>CNPJ</label>
+                        <input type="text" name="cnpj" value="{{ empresa.cnpj or '' }}">
+                    </div>
+
+                    <div class="campo">
+                        <label>Telefone / WhatsApp</label>
+                        <input type="text" name="telefone" value="{{ empresa.telefone or '' }}">
+                    </div>
+
+                    <div class="campo campo-full">
+                        <label>E-mail</label>
+                        <input type="email" name="email" value="{{ empresa.email or '' }}">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="config-card">
+                <h2>PIX Manual</h2>
+                <p>Dados exibidos na tela de pagamento do cliente.</p>
+
+                <div class="form-grid">
+
+                    <div class="campo campo-full">
+                        <label>Chave PIX</label>
+                        <input type="text" name="chave_pix" value="{{ config_pix.chave_pix or '' }}">
+                    </div>
+
+                    <div class="campo campo-full">
+                        <label>Public Key Mercado Pago futuro</label>
+                        <input type="text" name="public_key" value="{{ config_pix.public_key or '' }}">
+                    </div>
+
+                    <div class="campo campo-full">
+                        <label>Access Token Mercado Pago futuro</label>
+                        <input type="text" name="access_token" value="{{ config_pix.access_token or '' }}">
+                    </div>
+
+                </div>
+
+                <div class="pix-status">
+                    <div class="switch-line">
+                        <div>
+                            <strong>PIX ativo</strong>
+                            <small>Quando ativo, a chave PIX aparece para o cliente.</small>
+                        </div>
+
+                        <label class="switch">
+                            <input type="checkbox" name="pix_ativo" {% if config_pix.ativo %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>Mercado Pago fica para Fase 2</strong>
+                    <p>Por enquanto o sistema segue com PIX manual e comprovante enviado pelo cliente.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn-save">
+                Salvar Configurações
+            </button>
+
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back">
+                Voltar
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

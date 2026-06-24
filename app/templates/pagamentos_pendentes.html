@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.page-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.page-head h1{
+    margin:0;
+    font-size:34px;
+    color:#0f172a;
+}
+
+.page-head p{
+    margin-top:6px;
+    color:#64748b;
+}
+
+.btn-voltar{
+    background:#0f172a;
+    color:#fff;
+    text-decoration:none;
+    padding:12px 18px;
+    border-radius:14px;
+    font-weight:800;
+}
+
+.table-card{
+    background:#fff;
+    border-radius:24px;
+    padding:24px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 15px 35px rgba(0,0,0,.06);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    text-align:left;
+    padding:14px;
+    color:#64748b;
+    border-bottom:1px solid #e5e7eb;
+}
+
+td{
+    padding:14px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.badge{
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+}
+
+.badge-pendente{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.btn-confirmar{
+    background:#22c55e;
+    color:#fff;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:12px;
+    font-weight:800;
+}
+
+.btn-comprovante{
+    background:#2563eb;
+    color:#fff;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:12px;
+    font-weight:800;
+    margin-right:8px;
+}
+
+.empty{
+    text-align:center;
+    padding:40px;
+    color:#64748b;
+}
+
+@media(max-width:900px){
+
+    .table-card{
+        overflow-x:auto;
+    }
+
+    table{
+        min-width:900px;
+    }
+}
+</style>
+
+<div class="page-head">
+    <div>
+        <h1>Pagamentos Pendentes</h1>
+        <p>Comprovantes enviados pelos clientes aguardando confirmação.</p>
+    </div>
+
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn-voltar">
+        ← Voltar
+    </a>
+</div>
+
+<div class="table-card">
+
+{% if pagamentos %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Parcela</th>
+            <th>Valor</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Comprovante</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for pagamento in pagamentos %}
+
+        <tr>
+            <td>{{ pagamento.parcela.cliente.nome }}</td>
+
+            <td>
+                {{ pagamento.parcela.numero }}
+            </td>
+
+            <td>
+                R$ {{ "%.2f"|format(pagamento.valor_pago)|replace(".", ",") }}
+            </td>
+
+            <td>
+                {{ pagamento.data_pagamento.strftime("%d/%m/%Y %H:%M") }}
+            </td>
+
+            <td>
+                <span class="badge badge-pendente">
+                    Aguardando
+                </span>
+            </td>
+
+            <td>
+
+                {% if pagamento.comprovante %}
+                <a
+                    href="{{ url_for('static', filename=pagamento.comprovante) }}"
+                    target="_blank"
+                    class="btn-comprovante"
+                >
+                    Ver
+                </a>
+                {% else %}
+                    —
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for('parcelas.confirmar_pagamento', id=pagamento.id) }}"
+                    class="btn-confirmar"
+                >
+                    Confirmar
+                </a>
+
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% else %}
+
+<div class="empty">
+    Nenhum pagamento aguardando confirmação.
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.dashboard-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+}
+
+.dashboard-header h1{
+    font-size:36px;
+    margin:0;
+    color:#0f172a;
+}
+
+.dashboard-header p{
+    color:#64748b;
+    margin-top:6px;
+}
+
+.action-btn{
+    background:#22c55e;
+    color:#fff;
+    padding:14px 22px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:900;
+    box-shadow:0 12px 24px rgba(34,197,94,.25);
+}
+
+.cards-main{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.cards-small{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.card-color{
+    color:white;
+    border-radius:20px;
+    padding:22px;
+    min-height:132px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 16px 32px rgba(15,23,42,.12);
+    overflow:hidden;
+}
+
+.card-color small{
+    display:block;
+    color:rgba(255,255,255,.88);
+    font-weight:900;
+    text-transform:uppercase;
+    font-size:12px;
+}
+
+.card-color h2{
+    color:white;
+    font-size:30px;
+    line-height:1.1;
+    margin:10px 0 8px;
+}
+
+.card-color span{
+    color:rgba(255,255,255,.9);
+    font-size:14px;
+}
+
+.card-icon{
+    width:58px;
+    height:58px;
+    min-width:58px;
+    border-radius:16px;
+    background:rgba(255,255,255,.28);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+}
+
+.green{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);}
+.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.orange{background:linear-gradient(135deg,#f59e0b,#ea580c);}
+.cyan{background:linear-gradient(135deg,#06b6d4,#0891b2);}
+.sky{background:linear-gradient(135deg,#38bdf8,#0284c7);}
+.red{background:linear-gradient(135deg,#fb7185,#e11d48);}
+.yellow{background:linear-gradient(135deg,#facc15,#f59e0b);}
+
+.alert-card{
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    border-radius:18px;
+    padding:15px 18px;
+    margin-bottom:18px;
+    color:#9a3412;
+    font-weight:900;
+}
+
+.charts-grid{
+    display:grid;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);
+    gap:18px;
+    margin-bottom:18px;
+}
+
+.chart-card,
+.profit-card,
+.panel{
+    background:#fff;
+    border-radius:22px;
+    padding:22px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 16px 36px rgba(15,23,42,.07);
+    min-width:0;
+}
+
+.chart-card h3{
+    margin-bottom:16px;
+}
+
+.chart-box{
+    height:300px;
+    position:relative;
+}
+
+.profit-card{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:18px;
+    align-items:center;
+    border:1px solid #bbf7d0;
+    background:linear-gradient(90deg,#ecfdf5,#ffffff);
+    margin-bottom:18px;
+}
+
+.profit-item{
+    display:flex;
+    gap:16px;
+    align-items:center;
+}
+
+.profit-icon{
+    width:58px;
+    height:58px;
+    min-width:58px;
+    border-radius:50%;
+    background:#22c55e;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+}
+
+.profit-item small{
+    display:block;
+    color:#166534;
+    font-weight:900;
+    text-transform:uppercase;
+}
+
+.profit-item h2{
+    margin:6px 0 4px;
+    color:#166534;
+    font-size:30px;
+}
+
+.profit-item span{
+    color:#475569;
+    font-size:14px;
+}
+
+.profit-note{
+    border:1px dashed #cbd5e1;
+    padding:16px;
+    border-radius:16px;
+    color:#475569;
+    font-size:14px;
+}
+
+.quick-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:14px;
+    margin-top:16px;
+}
+
+.quick-card{
+    padding:16px;
+    border-radius:16px;
+    text-align:center;
+    text-decoration:none;
+    color:white;
+    font-weight:900;
+}
+
+@media(max-width:1250px){
+    .cards-main{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .cards-small{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .charts-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:700px){
+    .dashboard-header h1{
+        font-size:30px;
+    }
+
+    .cards-main,
+    .cards-small,
+    .profit-card,
+    .quick-grid{
+        grid-template-columns:1fr;
+    }
+
+    .card-color{
+        min-height:118px;
+        padding:20px;
+    }
+
+    .card-color h2{
+        font-size:28px;
+    }
+
+    .chart-box{
+        height:260px;
+    }
+}
+</style>
+
+<div class="dashboard-header">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Resumo financeiro da carteira de cobranças e parcelamentos.</p>
+    </div>
+
+    <a href="{{ url_for('clientes.novo_cliente') }}" class="action-btn">+ Novo Cliente</a>
+</div>
+
+{% if pagamentos_pendentes > 0 %}
+<div class="alert-card">
+    ⚠️ Existem {{ pagamentos_pendentes }} pagamento(s) aguardando confirmação.
+</div>
+{% endif %}
+
+<div class="cards-main">
+    <div class="card-color green">
+        <div>
+            <small>Total emprestado</small>
+            <h2>R$ {{ "%.2f"|format(total_emprestado)|replace(".", ",") }}</h2>
+            <span>Valor liberado aos clientes</span>
+        </div>
+        <div class="card-icon">💼</div>
+    </div>
+
+    <div class="card-color blue">
+        <div>
+            <small>Total com juros</small>
+            <h2>R$ {{ "%.2f"|format(total_com_juros)|replace(".", ",") }}</h2>
+            <span>Valor total a receber</span>
+        </div>
+        <div class="card-icon">%</div>
+    </div>
+
+    <div class="card-color purple">
+        <div>
+            <small>Total recebido</small>
+            <h2>R$ {{ "%.2f"|format(total_recebido)|replace(".", ",") }}</h2>
+            <span>Valores confirmados</span>
+        </div>
+        <div class="card-icon">⬇</div>
+    </div>
+
+    <div class="card-color orange">
+        <div>
+            <small>Em aberto</small>
+            <h2>R$ {{ "%.2f"|format(total_aberto)|replace(".", ",") }}</h2>
+            <span>Ainda não recebido</span>
+        </div>
+        <div class="card-icon">⏱</div>
+    </div>
+</div>
+
+<div class="cards-small">
+    <div class="card-color cyan">
+        <div>
+            <small>Clientes</small>
+            <h2>{{ total_clientes }}</h2>
+            <span>Devedores cadastrados</span>
+        </div>
+        <div class="card-icon">👥</div>
+    </div>
+
+    <div class="card-color blue">
+        <div>
+            <small>Parcelamentos</small>
+            <h2>{{ total_emprestimos }}</h2>
+            <span>Operações realizadas</span>
+        </div>
+        <div class="card-icon">📄</div>
+    </div>
+
+    <div class="card-color sky">
+        <div>
+            <small>Parcelas abertas</small>
+            <h2>{{ parcelas_abertas }}</h2>
+            <span>A vencer</span>
+        </div>
+        <div class="card-icon">📅</div>
+    </div>
+
+    <div class="card-color red">
+        <div>
+            <small>Atrasadas</small>
+            <h2>{{ parcelas_atrasadas }}</h2>
+            <span>Vencidas em aberto</span>
+        </div>
+        <div class="card-icon">⚠️</div>
+    </div>
+
+    <div class="card-color yellow">
+        <div>
+            <small>Aguardando conf.</small>
+            <h2>{{ pagamentos_pendentes }}</h2>
+            <span>Comprovantes enviados</span>
+        </div>
+        <div class="card-icon">⏳</div>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>Status das Parcelas</h3>
+        <div class="chart-box">
+            <canvas id="pizzaParcelas"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h3>Recebido x Aberto</h3>
+        <div class="chart-box">
+            <canvas id="barrasRecebimentos"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="profit-card">
+    <div class="profit-item">
+        <div class="profit-icon">📈</div>
+        <div>
+            <small>Lucro previsto</small>
+            <h2>R$ {{ "%.2f"|format(lucro_previsto)|replace(".", ",") }}</h2>
+            <span>Total com juros - Total emprestado</span>
+        </div>
+    </div>
+
+    <div class="profit-item">
+        <div class="profit-icon">💰</div>
+        <div>
+            <small>Total recebido</small>
+            <h2>R$ {{ "%.2f"|format(total_recebido)|replace(".", ",") }}</h2>
+            <span>Entradas confirmadas</span>
+        </div>
+    </div>
+
+    <div class="profit-note">
+        O lucro previsto representa o ganho total da carteira. O lucro recebido ficará mais preciso quando criarmos baixa proporcional por parcela.
+    </div>
+</div>
+
+<div class="panel">
+    <h3>Ações rápidas</h3>
+
+    <div class="quick-grid">
+        <a class="quick-card green" href="{{ url_for('clientes.novo_cliente') }}">👤 Novo Cliente</a>
+        <a class="quick-card blue" href="{{ url_for('emprestimos.novo_parcelamento') }}">📄 Novo Parcelamento</a>
+        <a class="quick-card orange" href="{{ url_for('parcelas.pagamentos_pendentes') }}">⏳ Pagamentos Pendentes</a>
+        <a class="quick-card purple" href="#">📊 Relatórios</a>
+    </div>
+</div>
+
+<script>
+const parcelasPagas = {{ parcelas_pagas }};
+const parcelasAbertas = {{ parcelas_abertas }};
+const parcelasAtrasadas = {{ parcelas_atrasadas }};
+const pagamentosPendentes = {{ pagamentos_pendentes }};
+
+new Chart(document.getElementById("pizzaParcelas"), {
+    type: "doughnut",
+    data: {
+        labels: ["Pagas", "Abertas", "Atrasadas", "Aguardando confirmação"],
+        datasets: [{
+            data: [parcelasPagas, parcelasAbertas, parcelasAtrasadas, pagamentosPendentes],
+            backgroundColor: ["#22c55e", "#3b82f6", "#ef4444", "#f59e0b"],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio:false,
+        plugins: {
+            legend: {
+                position: "bottom"
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById("barrasRecebimentos"), {
+    type: "bar",
+    data: {
+        labels: ["Recebido", "Em aberto"],
+        datasets: [{
+            label: "Valores",
+            data: [{{ total_recebido }}, {{ total_aberto }}],
+            backgroundColor: ["#22c55e", "#94a3b8"],
+            borderRadius: 12
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio:false,
+        plugins:{
+            legend:{display:false}
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

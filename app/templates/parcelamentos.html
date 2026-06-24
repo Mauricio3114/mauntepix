@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.page-head h1{margin:0;font-size:34px}
+.btn-main{background:#32BC7E;color:#fff;padding:13px 20px;border-radius:14px;text-decoration:none;font-weight:900}
+.card-table{background:#fff;border-radius:26px;padding:22px;box-shadow:0 16px 40px rgba(15,23,42,.08);overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:14px;text-align:left;border-bottom:1px solid #e5e7eb}
+th{font-size:13px;text-transform:uppercase;color:#64748b}
+.badge{padding:7px 12px;border-radius:999px;font-weight:900;font-size:12px}
+.ativo{background:#dcfce7;color:#166534}
+@media(max-width:800px){.page-head h1{font-size:28px} th,td{white-space:nowrap}}
+</style>
+
+<div class="page-head">
+    <div>
+        <h1>Parcelamentos</h1>
+        <p>Controle os valores emprestados, juros e parcelas geradas.</p>
+    </div>
+    <a href="{{ url_for('emprestimos.novo_parcelamento') }}" class="btn-main">+ Novo Parcelamento</a>
+</div>
+
+<div class="card-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Valor liberado</th>
+                <th>Total com juros</th>
+                <th>Parcelas</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in parcelamentos %}
+            <tr>
+                <td>{{ p.cliente.nome }}</td>
+                <td>R$ {{ "%.2f"|format(p.valor_liberado)|replace(".", ",") }}</td>
+                <td>R$ {{ "%.2f"|format(p.valor_total)|replace(".", ",") }}</td>
+                <td>{{ p.quantidade_parcelas }}</td>
+                <td><span class="badge ativo">{{ p.status }}</span></td>
+                <td>
+                    <a href="{{ url_for('emprestimos.detalhes_parcelamento', id=p.id) }}">Ver parcelas</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center;color:#64748b;padding:26px;">
+                    Nenhum parcelamento cadastrado.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

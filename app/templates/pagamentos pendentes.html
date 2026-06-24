@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Pagamentos Pendentes</h1>
+
+<div style="background:white;border-radius:26px;padding:22px;box-shadow:0 16px 40px rgba(15,23,42,.08);overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Valor</th>
+                <th>Comprovante</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pagamentos %}
+            <tr style="border-top:1px solid #e5e7eb;">
+                <td style="padding:14px;">{{ p.parcela.cliente.nome }}</td>
+                <td style="padding:14px;">R$ {{ "%.2f"|format(p.valor_pago)|replace(".", ",") }}</td>
+                <td style="padding:14px;">
+                    <a href="{{ url_for('static', filename=p.comprovante) }}" target="_blank">Ver comprovante</a>
+                </td>
+                <td style="padding:14px;">
+                    <a class="btn" href="{{ url_for('parcelas.confirmar_pagamento', id=p.id) }}">
+                        Confirmar
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align:center;padding:24px;color:#64748b;">
+                    Nenhum pagamento pendente.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

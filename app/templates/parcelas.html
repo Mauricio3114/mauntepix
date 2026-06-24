@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Parcelas</h1>
+
+<div style="background:white;border-radius:24px;padding:22px;box-shadow:0 16px 40px rgba(15,23,42,.08);overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th style="padding:12px;text-align:left;">Cliente</th>
+                <th style="padding:12px;text-align:left;">Parcela</th>
+                <th style="padding:12px;text-align:left;">Vencimento</th>
+                <th style="padding:12px;text-align:left;">Valor</th>
+                <th style="padding:12px;text-align:left;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in parcelas %}
+            <tr style="border-top:1px solid #e5e7eb;">
+                <td style="padding:12px;">{{ p.cliente.nome }}</td>
+                <td style="padding:12px;">{{ p.numero }}</td>
+                <td style="padding:12px;">{{ p.vencimento.strftime('%d/%m/%Y') }}</td>
+                <td style="padding:12px;">R$ {{ "%.2f"|format(p.valor)|replace(".", ",") }}</td>
+                <td style="padding:12px;">{{ p.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="padding:24px;text-align:center;color:#64748b;">
+                    Nenhuma parcela gerada.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

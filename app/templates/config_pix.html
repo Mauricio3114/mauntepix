@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="max-width:720px;background:#fff;border-radius:28px;padding:30px;box-shadow:0 18px 45px rgba(15,23,42,.08);">
+    <h1>Configuração PIX</h1>
+    <p style="color:#64748b;margin:8px 0 24px;">
+        Cadastre a chave PIX que aparecerá para o cliente enviar o comprovante.
+    </p>
+
+    <form method="POST">
+        <label style="font-weight:900;">Chave PIX</label>
+        <input name="chave_pix" required placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
+               value="{{ config.chave_pix if config and config.chave_pix else '' }}">
+
+        <br><br>
+
+        <button class="btn" type="submit">
+            Salvar Chave PIX
+        </button>
+    </form>
+</div>
+
+{% endblock %}

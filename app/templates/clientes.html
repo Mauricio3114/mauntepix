@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.clientes-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+}
+
+.clientes-header h1{
+    margin:0;
+    font-size:34px;
+    color:#0f172a;
+}
+
+.clientes-header p{
+    margin-top:6px;
+    color:#64748b;
+}
+
+.btn-novo-cliente{
+    background:#32BC7E;
+    color:white;
+    padding:14px 22px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:900;
+}
+
+.clientes-card{
+    background:white;
+    margin-top:22px;
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 12px 30px rgba(15,23,42,.08);
+    overflow-x:auto;
+}
+
+.clientes-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:820px;
+}
+
+.clientes-table th{
+    text-align:left;
+    padding:12px;
+    color:#334155;
+    background:#f8fafc;
+}
+
+.clientes-table td{
+    padding:12px;
+    border-top:1px solid #e5e7eb;
+    vertical-align:middle;
+}
+
+.clientes-table th:last-child,
+.clientes-table td:last-child{
+    text-align:right;
+}
+
+.acoes-clientes{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn-editar{
+    background:#f59e0b;
+    color:#fff;
+    padding:9px 13px;
+    border-radius:11px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:900;
+}
+
+.btn-excluir{
+    background:#ef4444;
+    color:#fff;
+    padding:9px 13px;
+    border-radius:11px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:900;
+}
+
+.btn-whatsapp{
+    background:#25D366;
+    color:#fff;
+    padding:9px 13px;
+    border-radius:11px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.vazio{
+    padding:20px;
+    text-align:center;
+    color:#64748b;
+    font-weight:800;
+}
+
+@media(max-width:768px){
+    .clientes-header h1{
+        font-size:28px;
+    }
+
+    .btn-novo-cliente{
+        width:100%;
+        text-align:center;
+    }
+
+    .clientes-card{
+        padding:14px;
+    }
+}
+</style>
+
+<div class="clientes-header">
+    <div>
+        <h1>Clientes</h1>
+        <p>Gerencie os clientes cadastrados no sistema.</p>
+    </div>
+
+    <a href="{{ url_for('clientes.novo_cliente') }}" class="btn-novo-cliente">
+        + Novo Cliente
+    </a>
+</div>
+
+<div class="clientes-card">
+    <table class="clientes-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+                <th>WhatsApp</th>
+                <th>Cidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in clientes %}
+                <tr>
+                    <td>{{ c.nome }}</td>
+                    <td>{{ c.cpf or '-' }}</td>
+                    <td>{{ c.telefone or '-' }}</td>
+                    <td>{{ c.whatsapp or '-' }}</td>
+                    <td>{{ c.cidade or '-' }} / {{ c.estado or '-' }}</td>
+                    <td>
+                        <div class="acoes-clientes">
+                            <a href="{{ url_for('clientes.editar_cliente', id=c.id) }}" class="btn-editar">
+                                Editar
+                            </a>
+
+                            <a href="{{ url_for('clientes.excluir_cliente', id=c.id) }}"
+                               class="btn-excluir"
+                               onclick="return confirm('Excluir cliente?')">
+                                Excluir
+                            </a>
+
+                            {% set zap_cliente = (c.whatsapp or c.telefone or '')|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '')|replace('.', '') %}
+
+                            {% if zap_cliente %}
+                                <a href="https://wa.me/55{{ zap_cliente }}"
+                                   target="_blank"
+                                   class="btn-whatsapp">
+                                    WhatsApp
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="vazio">
+                        Nenhum cliente cadastrado.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

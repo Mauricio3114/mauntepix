@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .relatorios-page{
+        display:flex;
+        flex-direction:column;
+        gap:22px;
+    }
+
+    .relatorios-header{
+        background:linear-gradient(135deg,#111827,#1e3a8a);
+        color:#fff;
+        border-radius:28px;
+        padding:28px;
+        box-shadow:0 18px 45px rgba(15,23,42,.22);
+    }
+
+    .relatorios-header h1{
+        margin:0;
+        font-size:32px;
+        font-weight:900;
+    }
+
+    .relatorios-header p{
+        margin:8px 0 0;
+        color:#dbeafe;
+        font-size:15px;
+    }
+
+    .cards-relatorios{
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        gap:16px;
+    }
+
+    .card-relatorio{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:22px;
+        padding:18px;
+        box-shadow:0 10px 28px rgba(15,23,42,.07);
+    }
+
+    .card-relatorio small{
+        display:block;
+        color:#64748b;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+
+    .card-relatorio strong{
+        font-size:28px;
+        color:#0f172a;
+    }
+
+    .filtros-relatorios{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:24px;
+        padding:18px;
+        box-shadow:0 10px 28px rgba(15,23,42,.06);
+        display:flex;
+        gap:12px;
+        align-items:end;
+        flex-wrap:wrap;
+    }
+
+    .campo-filtro{
+        flex:1;
+        min-width:240px;
+    }
+
+    .campo-filtro label{
+        font-size:13px;
+        color:#64748b;
+        font-weight:800;
+        margin-bottom:6px;
+        display:block;
+    }
+
+    .campo-filtro select{
+        width:100%;
+        border:1px solid #d1d5db;
+        border-radius:16px;
+        padding:13px;
+        font-weight:700;
+        outline:none;
+    }
+
+    .btn-premium{
+        border:none;
+        border-radius:16px;
+        padding:13px 18px;
+        font-weight:900;
+        text-decoration:none;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:8px;
+        cursor:pointer;
+        min-height:48px;
+    }
+
+    .btn-azul{
+        background:#2563eb;
+        color:#fff;
+    }
+
+    .btn-verde{
+        background:#16a34a;
+        color:#fff;
+    }
+
+    .tabela-card{
+        background:#fff;
+        border:1px solid #e5e7eb;
+        border-radius:26px;
+        padding:18px;
+        box-shadow:0 10px 28px rgba(15,23,42,.06);
+    }
+
+    .tabela-topo{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:14px;
+    }
+
+    .tabela-topo h2{
+        margin:0;
+        font-size:22px;
+        color:#0f172a;
+    }
+
+    .table-responsive-premium{
+        width:100%;
+        overflow-x:auto;
+        border-radius:18px;
+    }
+
+    .relatorios-table{
+        width:100%;
+        border-collapse:collapse;
+        min-width:850px;
+    }
+
+    .relatorios-table th{
+        background:#f1f5f9;
+        color:#334155;
+        font-size:13px;
+        text-align:left;
+        padding:14px;
+        white-space:nowrap;
+    }
+
+    .relatorios-table td{
+        padding:14px;
+        border-bottom:1px solid #e5e7eb;
+        color:#0f172a;
+        font-weight:600;
+        vertical-align:middle;
+    }
+
+    .badge-status{
+        padding:7px 12px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:900;
+        display:inline-block;
+        text-transform:uppercase;
+    }
+
+    .status-paga{
+        background:#dcfce7;
+        color:#166534;
+    }
+
+    .status-aberta{
+        background:#dbeafe;
+        color:#1d4ed8;
+    }
+
+    .status-aguardando_confirmacao{
+        background:#fef3c7;
+        color:#92400e;
+    }
+
+    .status-atrasada{
+        background:#fee2e2;
+        color:#991b1b;
+    }
+
+    .vazio{
+        text-align:center;
+        padding:32px;
+        color:#64748b;
+        font-weight:800;
+    }
+
+    @media(max-width:1100px){
+        .cards-relatorios{
+            grid-template-columns:repeat(2,1fr);
+        }
+    }
+
+    @media(max-width:680px){
+        .relatorios-header{
+            padding:22px;
+            border-radius:22px;
+        }
+
+        .relatorios-header h1{
+            font-size:26px;
+        }
+
+        .cards-relatorios{
+            grid-template-columns:1fr;
+        }
+
+        .filtros-relatorios{
+            padding:14px;
+        }
+
+        .campo-filtro{
+            min-width:100%;
+        }
+
+        .btn-premium{
+            width:100%;
+        }
+
+        .tabela-card{
+            padding:14px;
+        }
+
+        .relatorios-table{
+            min-width:760px;
+        }
+    }
+</style>
+
+<div class="relatorios-page">
+
+    <div class="relatorios-header">
+        <h1>Relatórios</h1>
+        <p>Visão completa dos clientes, parcelamentos, parcelas abertas, pagas e inadimplentes.</p>
+    </div>
+
+    <div class="cards-relatorios">
+        <div class="card-relatorio">
+            <small>Clientes</small>
+            <strong>{{ total_clientes }}</strong>
+        </div>
+
+        <div class="card-relatorio">
+            <small>Parcelamentos</small>
+            <strong>{{ total_parcelamentos }}</strong>
+        </div>
+
+        <div class="card-relatorio">
+            <small>Parcelas abertas</small>
+            <strong>{{ parcelas_abertas }}</strong>
+        </div>
+
+        <div class="card-relatorio">
+            <small>Parcelas pagas</small>
+            <strong>{{ parcelas_pagas }}</strong>
+        </div>
+
+        <div class="card-relatorio">
+            <small>Atrasadas</small>
+            <strong>{{ parcelas_atrasadas }}</strong>
+        </div>
+    </div>
+
+    <form method="GET" action="{{ url_for('relatorios.relatorios') }}" class="filtros-relatorios">
+        <div class="campo-filtro">
+            <label>Tipo de relatório</label>
+            <select name="tipo">
+                <option value="parcelas_abertas" {% if tipo == 'parcelas_abertas' %}selected{% endif %}>Parcelas em aberto</option>
+                <option value="parcelas_pagas" {% if tipo == 'parcelas_pagas' %}selected{% endif %}>Parcelas pagas</option>
+                <option value="inadimplentes" {% if tipo == 'inadimplentes' %}selected{% endif %}>Inadimplentes / atrasadas</option>
+                <option value="clientes" {% if tipo == 'clientes' %}selected{% endif %}>Clientes</option>
+                <option value="parcelamentos" {% if tipo == 'parcelamentos' %}selected{% endif %}>Parcelamentos</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-premium btn-azul">Filtrar</button>
+
+        <a href="{{ url_for('relatorios.exportar_excel', tipo=tipo) }}" class="btn-premium btn-verde">
+            Exportar Excel
+        </a>
+    </form>
+
+    <div class="tabela-card">
+        <div class="tabela-topo">
+            <h2>
+                {% if tipo == 'clientes' %}
+                    Relatório de Clientes
+                {% elif tipo == 'parcelamentos' %}
+                    Relatório de Parcelamentos
+                {% elif tipo == 'parcelas_pagas' %}
+                    Relatório de Parcelas Pagas
+                {% elif tipo == 'inadimplentes' %}
+                    Relatório de Inadimplentes / Atrasadas
+                {% else %}
+                    Relatório de Parcelas em Aberto
+                {% endif %}
+            </h2>
+        </div>
+
+        {% if dados %}
+            <div class="table-responsive-premium">
+                <table class="relatorios-table">
+                    <thead>
+                        {% if tipo == 'clientes' %}
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Telefone</th>
+                                <th>WhatsApp</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th>Status</th>
+                            </tr>
+                        {% elif tipo == 'parcelamentos' %}
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Valor liberado</th>
+                                <th>Juros</th>
+                                <th>Valor total</th>
+                                <th>Parcelas</th>
+                                <th>Periodicidade</th>
+                                <th>Data início</th>
+                                <th>Status</th>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Parcela</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Status</th>
+                                <th>Data pagamento</th>
+                                <th>Multa</th>
+                                <th>Valor atualizado</th>
+                            </tr>
+                        {% endif %}
+                    </thead>
+
+                    <tbody>
+                        {% for item in dados %}
+                            {% if tipo == 'clientes' %}
+                                <tr>
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ item.cpf or '-' }}</td>
+                                    <td>{{ item.telefone or '-' }}</td>
+                                    <td>{{ item.whatsapp or '-' }}</td>
+                                    <td>{{ item.cidade or '-' }}</td>
+                                    <td>{{ item.estado or '-' }}</td>
+                                    <td>
+                                        {% if item.ativo %}
+                                            <span class="badge-status status-paga">Ativo</span>
+                                        {% else %}
+                                            <span class="badge-status status-atrasada">Inativo</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% elif tipo == 'parcelamentos' %}
+                                <tr>
+                                    <td>{{ item.cliente.nome if item.cliente else '-' }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.valor_liberado or 0) }}</td>
+                                    <td>{{ "%.2f"|format(item.percentual_juros or 0) }}%</td>
+                                    <td>R$ {{ "%.2f"|format(item.valor_total or 0) }}</td>
+                                    <td>{{ item.quantidade_parcelas }}</td>
+                                    <td>{{ item.periodicidade }}</td>
+                                    <td>{{ item.data_inicio.strftime('%d/%m/%Y') if item.data_inicio else '-' }}</td>
+                                    <td>
+                                        <span class="badge-status status-aberta">{{ item.status }}</span>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>{{ item.cliente.nome if item.cliente else '-' }}</td>
+                                    <td>{{ item.numero }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.valor or 0) }}</td>
+                                    <td>{{ item.vencimento.strftime('%d/%m/%Y') if item.vencimento else '-' }}</td>
+                                    <td>
+                                        <span class="badge-status status-{{ item.status }}">
+                                            {{ item.status.replace('_', ' ') }}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.data_pagamento.strftime('%d/%m/%Y') if item.data_pagamento else '-' }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.valor_multa or 0) }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.valor_atualizado or item.valor or 0) }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="vazio">
+                Nenhum registro encontrado para este relatório.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

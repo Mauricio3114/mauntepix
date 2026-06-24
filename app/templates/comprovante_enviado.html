@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.success-wrap{
+    max-width:800px;
+    margin:40px auto;
+}
+
+.success-card{
+    background:#fff;
+    border-radius:30px;
+    padding:40px;
+    text-align:center;
+    border:1px solid #e5e7eb;
+    box-shadow:0 20px 50px rgba(15,23,42,.08);
+}
+
+.success-icon{
+    width:110px;
+    height:110px;
+    margin:auto;
+    border-radius:50%;
+    background:#dcfce7;
+    color:#16a34a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:56px;
+    font-weight:bold;
+}
+
+.success-card h1{
+    margin-top:25px;
+    color:#0f172a;
+    font-size:38px;
+}
+
+.success-card p{
+    color:#64748b;
+    font-size:17px;
+    line-height:1.7;
+}
+
+.info-box{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:20px;
+    padding:22px;
+    margin-top:25px;
+    text-align:left;
+}
+
+.info-box div{
+    margin-bottom:10px;
+}
+
+.status-box{
+    margin-top:25px;
+    padding:18px;
+    border-radius:16px;
+    background:#fef3c7;
+    color:#92400e;
+    font-weight:800;
+}
+
+.btn-home{
+    display:inline-block;
+    margin-top:28px;
+    background:#32BC7E;
+    color:white;
+    text-decoration:none;
+    padding:15px 28px;
+    border-radius:16px;
+    font-weight:900;
+}
+
+@media(max-width:768px){
+
+    .success-card{
+        padding:25px;
+    }
+
+    .success-card h1{
+        font-size:30px;
+    }
+}
+</style>
+
+<div class="success-wrap">
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>Comprovante Enviado</h1>
+
+        <p>
+            Seu comprovante foi enviado com sucesso e já está disponível
+            para análise do administrador.
+        </p>
+
+        <div class="info-box">
+
+            <div>
+                <strong>Cliente:</strong>
+                {{ parcela.cliente.nome }}
+            </div>
+
+            <div>
+                <strong>Parcela:</strong>
+                {{ parcela.numero }}
+            </div>
+
+            <div>
+                <strong>Valor:</strong>
+                R$ {{ "%.2f"|format(parcela.valor)|replace(".", ",") }}
+            </div>
+
+            <div>
+                <strong>Vencimento:</strong>
+                {{ parcela.vencimento.strftime("%d/%m/%Y") }}
+            </div>
+
+        </div>
+
+        <div class="status-box">
+            ⏳ Aguardando confirmação do pagamento pelo administrador.
+        </div>
+
+        <a href="/" class="btn-home">
+            Finalizar
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

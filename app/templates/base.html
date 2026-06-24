@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>MauntePix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+    --verde:#32BC7E;
+    --verde-hover:#28a86f;
+    --azul:#0f172a;
+    --azul-2:#111c32;
+    --bg:#f4f7f8;
+    --texto:#0f172a;
+    --muted:#64748b;
+    --borda:#e2e8f0;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    background:var(--bg);
+    color:var(--texto);
+    font-family:Segoe UI,Arial,sans-serif;
+}
+
+.app{display:flex;min-height:100vh;}
+
+.sidebar{
+    width:265px;
+    background:linear-gradient(180deg,#0f172a,#111827);
+    color:white;
+    padding:24px 16px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+.logo{
+    font-size:32px;
+    font-weight:900;
+    color:white;
+    text-decoration:none;
+    display:block;
+    margin-bottom:30px;
+    padding:0 8px;
+}
+
+.logo span{color:#32BC7E;}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    flex:1;
+}
+
+.nav a{
+    color:#cbd5e1;
+    text-decoration:none;
+    padding:13px 14px;
+    border-radius:14px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    transition:.2s;
+}
+
+.nav a:hover{
+    background:rgba(255,255,255,.09);
+    color:white;
+    transform:translateX(3px);
+}
+
+.sidebar-footer{
+    margin-top:18px;
+    padding-bottom:10px;
+}
+
+.userbox{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:12px;
+}
+
+.userbox strong{
+    display:block;
+    font-size:15px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.userbox small{
+    display:block;
+    color:#94a3b8;
+    font-size:13px;
+    margin-top:4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.logout{
+    background:linear-gradient(135deg,#ef4444,#dc2626) !important;
+    color:white !important;
+    width:100%;
+    display:flex !important;
+    justify-content:center;
+    align-items:center;
+    padding:14px !important;
+    border-radius:16px !important;
+}
+.main{
+    margin-left:280px;
+    width:calc(100% - 280px);
+    min-height:100vh;
+}
+
+.topbar{
+    height:76px;
+    background:white;
+    border-bottom:1px solid var(--borda);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    position:sticky;
+    top:0;
+    z-index:900;
+}
+
+.menu-toggle{
+    display:none;
+    border:none;
+    background:var(--azul);
+    color:white;
+    border-radius:12px;
+    padding:10px 13px;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.container{
+    width:100%;
+    max-width:1500px;
+    margin:auto;
+    padding:30px;
+}
+
+.flash{
+    background:#dcfce7;
+    color:#166534;
+    border:1px solid #bbf7d0;
+    padding:14px 18px;
+    border-radius:14px;
+    margin-bottom:18px;
+    font-weight:700;
+}
+
+.flash-erro{
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+}
+
+.btn{
+    border:none;
+    background:var(--verde);
+    color:white;
+    font-weight:800;
+    padding:14px 24px;
+    border-radius:14px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid #cbd5e1;
+    border-radius:14px;
+    outline:none;
+    font-size:15px;
+}
+
+input:focus,select:focus,textarea:focus{
+    border-color:var(--verde);
+    box-shadow:0 0 0 4px rgba(50,188,126,.15);
+}
+
+.mobile-overlay{display:none;}
+
+@media(max-width:950px){
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s;
+        width:285px;
+    }
+
+    .sidebar.open{transform:translateX(0);}
+
+    .mobile-overlay.show{
+        display:block;
+        position:fixed;
+        inset:0;
+        background:rgba(15,23,42,.45);
+        z-index:950;
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+    }
+
+    .menu-toggle{display:block;}
+
+    .container{padding:18px;}
+
+    .topbar{padding:0 18px;}
+}
+</style>
+</head>
+
+<body>
+
+{% if current_user.is_authenticated %}
+
+<div class="app">
+
+    <aside class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="logo">
+            Maunte<span>Pix</span>
+        </a>
+
+        <nav class="nav">
+            <a href="{{ url_for('dashboard.dashboard') }}">📊 Dashboard</a>
+            <a href="{{ url_for('clientes.listar_clientes') }}">👥 Clientes</a>
+            <a href="{{ url_for('emprestimos.parcelamentos') }}">💰 Parcelamentos</a>
+            <a href="{{ url_for('parcelas.listar_parcelas') }}">📑 Parcelas</a>
+            <a href="{{ url_for('parcelas.pagamentos_pendentes') }}">⏳ Pagamentos Pendentes</a>
+            <a href="{{ url_for('pix.configuracao_pix') }}">⚡ PIX</a>
+            <a href="{{ url_for('relatorios.relatorios') }}">📈 Relatórios</a>
+            <a href="{{ url_for('usuarios.listar_usuarios') }}">👤 Usuários</a>
+            <a href="{{ url_for('configuracoes.configuracoes') }}">⚙️ Configurações</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="userbox">
+                <strong>{{ current_user.nome }}</strong>
+                <small>{{ current_user.email }}</small>
+            </div>
+
+            <a href="{{ url_for('auth.logout') }}" class="logout btn" style="width:100%;display:block;text-align:center;">
+                🚪 Sair
+            </a>
+        </div>
+    </aside>
+
+    <div class="mobile-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <main class="main">
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <strong>Gestão Inteligente de Cobranças e Parcelamentos</strong>
+        </header>
+
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for categoria, mensagem in messages %}
+                        <div class="flash {% if categoria == 'erro' %}flash-erro{% endif %}">
+                            {{ mensagem }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {{ self.content() }}
+        </div>
+    </main>
+
+</div>
+
+{% else %}
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for categoria, mensagem in messages %}
+                <div class="flash {% if categoria == 'erro' %}flash-erro{% endif %}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</div>
+
+{% endif %}
+
+<script>
+function toggleMenu(){
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    if(!sidebar || !overlay) return;
+
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+}
+</script>
+
+</body>
+</html>

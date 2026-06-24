@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.pix-card{
+    max-width:620px;
+    margin:auto;
+    background:#fff;
+    border-radius:28px;
+    padding:30px;
+    box-shadow:0 18px 45px rgba(15,23,42,.10);
+}
+
+.pix-top{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.pix-top h1{
+    margin:0;
+    font-size:34px;
+}
+
+.pix-info{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:22px;
+}
+
+.pix-valor{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:white;
+    padding:22px;
+    border-radius:22px;
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.pix-valor h2{
+    font-size:38px;
+    margin:8px 0 0;
+}
+
+.pix-chave{
+    background:#0f172a;
+    color:white;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:22px;
+}
+
+.pix-chave input{
+    margin-top:10px;
+    background:white;
+    color:#0f172a;
+    font-weight:800;
+}
+
+.btn-pix{
+    width:100%;
+    background:#32BC7E;
+    color:white;
+    border:0;
+    padding:15px;
+    border-radius:16px;
+    font-weight:900;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.btn-copy{
+    margin-top:10px;
+    width:100%;
+    background:#fff;
+    color:#0f172a;
+    border:0;
+    padding:12px;
+    border-radius:14px;
+    font-weight:900;
+    cursor:pointer;
+}
+</style>
+
+<div class="pix-card">
+
+    <div class="pix-top">
+        <h1>Pagamento PIX</h1>
+        <p>Envie o comprovante para confirmação do administrador.</p>
+    </div>
+
+    <div class="pix-info">
+        <p><strong>Cliente:</strong> {{ parcela.cliente.nome }}</p>
+        <p><strong>Parcela:</strong> {{ parcela.numero }}</p>
+        <p><strong>Vencimento:</strong> {{ parcela.vencimento.strftime('%d/%m/%Y') }}</p>
+    </div>
+
+    <div class="pix-valor">
+        <span>Valor da parcela</span>
+        <h2>R$ {{ "%.2f"|format(parcela.valor_atualizado)|replace(".", ",") }}</h2>
+    </div>
+
+    <div class="pix-chave">
+        <strong>Chave PIX</strong>
+        <input id="chavePix" value="85999999999" readonly>
+        <button type="button" class="btn-copy" onclick="copiarPix()">Copiar chave PIX</button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label><strong>Comprovante PIX</strong></label>
+        <input type="file" name="comprovante" required>
+
+        <br><br>
+
+        <button type="submit" class="btn-pix">
+            Enviar Comprovante
+        </button>
+    </form>
+
+</div>
+
+<script>
+function copiarPix(){
+    const input = document.getElementById("chavePix");
+    input.select();
+    document.execCommand("copy");
+    alert("Chave PIX copiada!");
+}
+</script>
+
+{% endblock %}

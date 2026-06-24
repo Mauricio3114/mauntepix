@@ -9,7 +9,20 @@ usuarios_bp = Blueprint("usuarios", __name__)
 
 
 def somente_admin():
-    return current_user.is_authenticated and current_user.is_admin()
+    return current_user.is_authenticated and current_user.perfil in ["master", "admin"]
+
+
+def perfil_permitido(perfil):
+    if current_user.perfil == "master":
+        return perfil in ["master", "admin", "operador", "consulta"]
+
+    return perfil in ["admin", "operador", "consulta"]
+
+
+def query_usuarios_empresa():
+    return Usuario.query.filter_by(
+        empresa_id=current_user.empresa_id
+    )
 
 
 @usuarios_bp.route("/usuarios")
@@ -19,9 +32,7 @@ def listar_usuarios():
         flash("Você não tem permissão para acessar usuários.", "erro")
         return redirect(url_for("dashboard.dashboard"))
 
-    usuarios = Usuario.query.filter_by(
-        empresa_id=current_user.empresa_id
-    ).order_by(Usuario.nome.asc()).all()
+    usuarios = query_usuarios_empresa().order_by(Usuario.nome.asc()).all()
 
     return render_template("usuarios.html", usuarios=usuarios)
 
@@ -41,6 +52,10 @@ def novo_usuario():
 
         if not nome or not email or not senha:
             flash("Preencha nome, e-mail e senha.", "erro")
+            return redirect(url_for("usuarios.novo_usuario"))
+
+        if not perfil_permitido(perfil):
+            flash("Perfil não permitido para seu usuário.", "erro")
             return redirect(url_for("usuarios.novo_usuario"))
 
         existe = Usuario.query.filter_by(email=email).first()
@@ -75,17 +90,34 @@ def editar_usuario(id):
         flash("Você não tem permissão para editar usuários.", "erro")
         return redirect(url_for("dashboard.dashboard"))
 
-    usuario = Usuario.query.filter_by(
-        id=id,
-        empresa_id=current_user.empresa_id
-    ).first_or_404()
+    usuario = query_usuarios_empresa().filter_by(id=id).first_or_404()
 
     if request.method == "POST":
-        usuario.nome = request.form.get("nome")
-        usuario.email = request.form.get("email")
-        usuario.perfil = request.form.get("perfil", "operador")
-
+        nome = request.form.get("nome")
+        email = request.form.get("email")
+        perfil = request.form.get("perfil", "operador")
         senha = request.form.get("senha")
+
+        if not perfil_permitido(perfil):
+            flash("Perfil não permitido para seu usuário.", "erro")
+            return redirect(url_for("usuarios.editar_usuario", id=id))
+
+        if usuario.id == current_user.id and perfil != current_user.perfil:
+            flash("Você não pode alterar seu próprio perfil.", "erro")
+            return redirect(url_for("usuarios.editar_usuario", id=id))
+
+        email_existente = Usuario.query.filter(
+            Usuario.email == email,
+            Usuario.id != usuario.id
+        ).first()
+
+        if email_existente:
+            flash("Já existe outro usuário com esse e-mail.", "erro")
+            return redirect(url_for("usuarios.editar_usuario", id=id))
+
+        usuario.nome = nome
+        usuario.email = email
+        usuario.perfil = perfil
 
         if senha:
             usuario.set_senha(senha)
@@ -105,13 +137,14 @@ def alterar_status_usuario(id):
         flash("Você não tem permissão para alterar usuários.", "erro")
         return redirect(url_for("dashboard.dashboard"))
 
-    usuario = Usuario.query.filter_by(
-        id=id,
-        empresa_id=current_user.empresa_id
-    ).first_or_404()
+    usuario = query_usuarios_empresa().filter_by(id=id).first_or_404()
 
     if usuario.id == current_user.id:
         flash("Você não pode inativar seu próprio usuário.", "erro")
+        return redirect(url_for("usuarios.listar_usuarios"))
+
+    if usuario.perfil == "master" and current_user.perfil != "master":
+        flash("Você não pode alterar um usuário master.", "erro")
         return redirect(url_for("usuarios.listar_usuarios"))
 
     usuario.ativo = not usuario.ativo

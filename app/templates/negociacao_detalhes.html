@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.card{
+    background:white;
+    border-radius:28px;
+    padding:30px;
+    box-shadow:0 15px 40px rgba(15,23,42,.08);
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.item{
+    background:#f8fafc;
+    border-radius:18px;
+    padding:18px;
+}
+
+.item small{
+    display:block;
+    color:#64748b;
+    margin-bottom:6px;
+    font-weight:800;
+}
+
+.item strong{
+    font-size:18px;
+}
+
+.obs{
+    margin-top:20px;
+    background:#f8fafc;
+    border-radius:18px;
+    padding:20px;
+}
+
+.btn{
+    background:#32BC7E;
+    color:white;
+    text-decoration:none;
+    padding:12px 18px;
+    border-radius:14px;
+    font-weight:900;
+}
+
+@media(max-width:768px){
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+<div class="card">
+
+    <div class="header">
+
+        <h1>🤝 Detalhes da Negociação</h1>
+
+        <a
+        href="{{ url_for('negociacoes.listar_negociacoes') }}"
+        class="btn">
+
+            Voltar
+
+        </a>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="item">
+            <small>Cliente</small>
+            <strong>{{ solicitacao.cliente.nome }}</strong>
+        </div>
+
+        <div class="item">
+            <small>CPF</small>
+            <strong>{{ solicitacao.cliente.cpf }}</strong>
+        </div>
+
+        <div class="item">
+            <small>Telefone</small>
+            <strong>{{ solicitacao.cliente.telefone }}</strong>
+        </div>
+
+        <div class="item">
+            <small>Tipo</small>
+            <strong>{{ solicitacao.tipo }}</strong>
+        </div>
+
+        <div class="item">
+            <small>Valor Proposto</small>
+            <strong>
+                R$ {{ "%.2f"|format(solicitacao.valor or 0)|replace(".", ",") }}
+            </strong>
+        </div>
+
+        <div class="item">
+            <small>Status</small>
+            <strong>{{ solicitacao.status }}</strong>
+        </div>
+
+    </div>
+
+    <div class="obs">
+
+        <h3>Observação</h3>
+
+        <p>
+            {{ solicitacao.observacao or "Nenhuma observação informada." }}
+        </p>
+
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+
+        <a
+        href="https://wa.me/55{{ (solicitacao.cliente.whatsapp or solicitacao.cliente.telefone)|replace('(','')|replace(')','')|replace('-','')|replace(' ','') }}"
+        target="_blank"
+        class="btn">
+
+            💬 WhatsApp Cliente
+
+        </a>
+
+        {% if solicitacao.status == "pendente" %}
+
+        <a
+        href="{{ url_for('negociacoes.concluir_negociacao', id=solicitacao.id) }}"
+        class="btn">
+
+            ✅ Marcar como Concluída
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,3 +1,5 @@
+import uuid
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
@@ -13,6 +15,12 @@ def listar_clientes():
     lista = Cliente.query.filter_by(
         empresa_id=current_user.empresa_id
     ).order_by(Cliente.id.desc()).all()
+
+    for cliente in lista:
+        if not cliente.token_portal:
+            cliente.token_portal = str(uuid.uuid4())
+
+    db.session.commit()
 
     return render_template("clientes.html", clientes=lista)
 
@@ -37,6 +45,7 @@ def novo_cliente():
             cidade=request.form.get("cidade"),
             estado=request.form.get("estado"),
             endereco=request.form.get("endereco"),
+            token_portal=str(uuid.uuid4())
         )
 
         db.session.add(cliente)
@@ -55,6 +64,10 @@ def editar_cliente(id):
         id=id,
         empresa_id=current_user.empresa_id
     ).first_or_404()
+
+    if not cliente.token_portal:
+        cliente.token_portal = str(uuid.uuid4())
+        db.session.commit()
 
     if request.method == "POST":
         cliente.nome = request.form.get("nome")

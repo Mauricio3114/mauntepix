@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Meu Portal Financeiro</title>
+
+<style>
+
+:root{
+    --verde:#32BC7E;
+    --azul:#0f172a;
+    --bg:#f4f7f8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    font-family:Segoe UI,sans-serif;
+    color:#0f172a;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.hero{
+    background:linear-gradient(135deg,#0f172a,#14532d);
+    color:white;
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 20px 45px rgba(15,23,42,.18);
+}
+
+.hero h1{
+    margin:0;
+    font-size:30px;
+}
+
+.hero p{
+    margin-top:6px;
+    color:#dcfce7;
+}
+
+.resumo{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin-top:22px;
+}
+
+.card{
+    background:white;
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 12px 30px rgba(15,23,42,.08);
+}
+
+.card small{
+    color:#64748b;
+    font-weight:800;
+}
+
+.card h2{
+    margin-top:8px;
+    font-size:28px;
+}
+
+.btn-pagar{
+    display:block;
+    margin-top:18px;
+    width:100%;
+    text-align:center;
+    background:linear-gradient(135deg,#32BC7E,#16a34a);
+    color:white;
+    text-decoration:none;
+    padding:18px;
+    border-radius:18px;
+    font-size:18px;
+    font-weight:900;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.action{
+    background:white;
+    padding:16px;
+    border-radius:18px;
+    text-align:center;
+    text-decoration:none;
+    color:#0f172a;
+    font-weight:900;
+    box-shadow:0 10px 25px rgba(15,23,42,.08);
+}
+
+.table-card{
+    margin-top:22px;
+    background:white;
+    border-radius:24px;
+    padding:20px;
+    box-shadow:0 12px 30px rgba(15,23,42,.08);
+}
+
+.table-card h2{
+    margin-bottom:18px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    text-align:left;
+    padding:12px;
+    background:#f8fafc;
+}
+
+td{
+    padding:14px 12px;
+    border-top:1px solid #e5e7eb;
+}
+
+.badge{
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:900;
+}
+
+.paga{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.aberta{
+    background:#fef3c7;
+    color:#854d0e;
+}
+
+.atrasada{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    color:#64748b;
+}
+
+@media(max-width:700px){
+
+.resumo{
+    grid-template-columns:1fr;
+}
+
+.actions{
+    grid-template-columns:1fr;
+}
+
+.hero h1{
+    font-size:24px;
+}
+
+table{
+    font-size:14px;
+}
+
+}
+
+.action-negociar{
+    background:linear-gradient(135deg,#fef3c7,#fff7ed);
+    color:#92400e;
+    border:1px solid #fde68a;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="hero">
+
+        <h1>Olá, {{ cliente.nome }}</h1>
+
+        <p>
+            Bem-vindo ao seu portal financeiro.
+        </p>
+
+    </div>
+
+    <div class="resumo">
+
+        <div class="card">
+            <small>SALDO DEVEDOR</small>
+
+            <h2>
+                R$ {{ "%.2f"|format(saldo_devedor)|replace(".", ",") }}
+            </h2>
+        </div>
+
+        <div class="card">
+            <small>TOTAL PAGO</small>
+
+            <h2>
+                R$ {{ "%.2f"|format(total_pago)|replace(".", ",") }}
+            </h2>
+        </div>
+
+    </div>
+
+    {% if parcela_para_pagar %}
+
+        <a
+        href="{{ url_for('parcelas.pagar_parcela', token=parcela_para_pagar.token_pagamento) }}"
+        class="btn-pagar">
+
+            💰 PAGAR AGORA
+
+        </a>
+
+    {% endif %}
+
+    <div class="actions">
+
+        {% if empresa.telefone %}
+
+        {% set zap = empresa.telefone|replace('(','')|replace(')','')|replace('-','')|replace(' ','') %}
+
+        <a
+        href="https://wa.me/55{{ zap }}"
+        target="_blank"
+        class="action">
+
+            💬 WhatsApp
+
+        </a>
+
+        {% endif %}
+
+        {% if empresa.telefone %}
+
+        {% set zap = empresa.telefone|replace('(','')|replace(')','')|replace('-','')|replace(' ','') %}
+
+        <a
+        href="{{ url_for('negociacoes.negociar_cliente', token=cliente.token_portal) }}"
+        class="action action-negociar">
+
+            🤝 Negociar
+
+        </a>
+
+        {% endif %}
+
+        <a
+        href="#historico"
+        class="action">
+
+            📑 Histórico
+
+        </a>
+
+    </div>
+
+    <div class="table-card" id="historico">
+
+        <h2>Minhas Parcelas</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Parcela</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for parcela in parcelas %}
+
+                <tr>
+
+                    <td>
+                        {{ parcela.numero }}
+                    </td>
+
+                    <td>
+                        {{ parcela.vencimento.strftime('%d/%m/%Y') }}
+                    </td>
+
+                    <td>
+
+                        {% if parcela.status == "paga" %}
+
+                            <span class="badge paga">
+                                PAGA
+                            </span>
+
+                        {% elif parcela.vencimento < hoje %}
+
+                            <span class="badge atrasada">
+                                ATRASADA
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge aberta">
+                                EM ABERTO
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        R$
+                        {{ "%.2f"|format(parcela.valor_atualizado or parcela.valor)|replace(".", ",") }}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="footer">
+
+        {{ empresa.nome }}
+
+    </div>
+
+</div>
+
+</body>
+</html>

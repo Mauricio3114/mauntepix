@@ -126,6 +126,19 @@
         padding:14px;
     }
 }
+
+.btn-portal{
+    background:#0f172a;
+    color:#fff;
+    padding:9px 13px;
+    border-radius:11px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
 </style>
 
 <div class="clientes-header">
@@ -179,6 +192,14 @@
                                    target="_blank"
                                    class="btn-whatsapp">
                                     WhatsApp
+                                </a>
+                            {% endif %}
+
+                            {% if c.token_portal %}
+                                <a href="{{ url_for('portal.portal_cliente', token=c.token_portal) }}"
+                                target="_blank"
+                                class="btn-portal">
+                                    Portal
                                 </a>
                             {% endif %}
                         </div>

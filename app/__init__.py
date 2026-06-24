@@ -30,6 +30,7 @@ def create_app():
     from app.models.parcela import Parcela
     from app.models.pagamento import Pagamento
     from app.models.configpix import ConfigPix
+    from app.models.solicitacao_negociacao import SolicitacaoNegociacao
 
     # ROTAS
     from app.routes.auth import auth_bp
@@ -42,6 +43,8 @@ def create_app():
     from app.routes.usuarios import usuarios_bp
     from app.routes.configuracoes import configuracoes_bp
     from app.routes.master import master_bp
+    from app.routes.portal import portal_bp
+    from app.routes.negociacoes import negociacoes_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -53,5 +56,7 @@ def create_app():
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(configuracoes_bp)
     app.register_blueprint(master_bp)
+    app.register_blueprint(portal_bp)
+    app.register_blueprint(negociacoes_bp)
 
     return app
